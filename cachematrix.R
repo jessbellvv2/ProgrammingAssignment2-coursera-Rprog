@@ -1,33 +1,34 @@
-
-## Set the input to x as a matrix
-## After set the solved value as "s"
-## At last, change "mean" to "solve"
-
-makeCacheMatrix <- function(x = matrix(sample(1:100,9),3,3)) {
-  s <- NULL
+## library(MASS) is used to calculate inverse for non squared as well as square matrices
+library(MASS)
+makeCacheMatrix <- function(x = matrix()) {
+  s <- NULL         #initializing inverse as NULL
   set <- function(y) {
-    x <<- y
-    s <<- NULL
+    x<<-y
+    inv<<-NULL
   }
-  get <- function() x
-  setsolve <- function(solve) s <<- solve
-  getsolve <- function() s
+  get<-function()x          #function to get matrix x
+  setinv<-function(inverse)inv<<-inverse
+  getsolve<-function(){
+                      inver<-ginv(x)
+                      inver%*%x
+  }
   list(set = set, get = get,
-       setsolve = setsolve,
-       getsolve = getsolve)
+       setinv = setinv,
+       getinv = getinv)
 }
 
 
-## Here i just changed "mean" to "solve" as the same as before
+## this is used to get the cache data
 
-cacheSolve <- function(x, ...) {
-  s <- x$getsolve()
-  if(!is.null(s)) {
-    message("getting inversed matrix")
-    return(s)
-  }
-  data <- x$get()
-  s <- solve(data, ...)
-  x$setsolve(s)
-  s
+cacheSolve <- function(x, ...) ##gets chache data
+  {
+  inv<-x$getinv()
+  if(!is.null(inv)) {     ##checking whether inverse is null
+    message("getting cached data!")
+    return(inv)
+  }         #returns inverse value
+  data<-x$get()
+  inv<-solve(data, ...)         #calclates inverse value
+  x$setinv(inv)
+  inv  ##return a matrix that is the inverse of 'x'
 }
